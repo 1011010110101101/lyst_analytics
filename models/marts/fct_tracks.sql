@@ -43,5 +43,6 @@ select
     track_timestamp,
     product_id,
     retailer_id,
-    price
+    price,
+    insert_timestamp
 from deduplicated
