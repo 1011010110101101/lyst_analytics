@@ -1,0 +1,21 @@
+version: 2
+
+models:
+  - name: fct_tracks
+    description: >
+      Final deduplicated tracks table sourced from both raw and backfill staging models.
+      One row per track_id, favoring most recent insert_timestamp.
+    columns:
+      - name: track_id
+        description: Unique identifier of the track event
+        tests:
+          - not_null
+          - unique
+      - name: track_timestamp
+        description: Timestamp of the user track event
+      - name: product_id
+        description: Identifier for the clicked product
+      - name: retailer_id
+        description: Identifier for the retailer site linked to
+      - name: price
+        description: Price of the product at the time of the track
