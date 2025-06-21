@@ -1,0 +1,21 @@
+version: 2
+
+sources:
+  - name: data_source
+    database: ANALYTICS_ENGINEER_TEST
+    schema: DATA_SOURCE
+    tables:
+      - name: tracks_raw
+        description: "Raw track data updated regularly with inserts and some updates"
+        columns:
+          - name: track_id
+            tests:
+              - not_null
+              - unique
+      - name: tracks_backfill
+        description: "Static backfill table for past track corrections"
+        columns:
+          - name: track_id
+            tests:
+              - not_null
+              - unique
