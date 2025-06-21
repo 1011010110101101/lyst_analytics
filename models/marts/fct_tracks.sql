@@ -3,25 +3,20 @@
     unique_key='track_id'
 ) }}
 
-with raw_tracks as (
-
-    {% if is_incremental() %}
-
-    -- Only pull records newer than what's already in the table
-    select s.*
-    from {{ ref('stg_tracks_raw') }} s
-    where s.insert_timestamp > (
-        select max(insert_timestamp) from {{ this }}
-    )
-
-    {% else %}
-
-    -- For full-refresh, pull all data
-    select * from {{ ref('stg_tracks_raw') }}
-
-    {% endif %}
-
+{% if is_incremental() %}
+with max_ts as (
+    select max(insert_timestamp) as max_ts from {{ this }}
 ),
+raw_tracks as (
+    select *
+    from {{ ref('stg_tracks_raw') }}
+    where insert_timestamp > (select max_ts from max_ts)
+),
+{% else %}
+raw_tracks as (
+    select * from {{ ref('stg_tracks_raw') }}
+),
+{% endif %}
 
 backfill_tracks as (
     select * from {{ ref('stg_tracks_backfill') }}
