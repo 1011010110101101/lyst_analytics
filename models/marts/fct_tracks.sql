@@ -1,6 +1,5 @@
 {{ config(
-    materialized='table',
-    schema='PATRICKGALLAGHER'
+    materialized='table'
 ) }}
 
 with raw_tracks as (
