@@ -1,3 +1,8 @@
+{{ config(
+    materialized='table',
+    schema='PATRICKGALLAGHER'
+) }}
+
 with raw_tracks as (
     select * from {{ ref('stg_tracks_raw') }}
 ),

@@ -7,11 +7,26 @@ sources:
     tables:
       - name: tracks_raw
         description: "Raw track data updated regularly with inserts and some updates"
+        loaded_at_field: insert_timestamp
+        freshness:
+          warn_after: {count: 24, period: hour}
+          error_after: {count: 48, period: hour}
         columns:
           - name: track_id
             tests:
               - not_null
               - unique
+          - name: insert_timestamp
+            description: "Timestamp of data insertion"
+          - name: track_timestamp
+            description: "Timestamp of the track"
+          - name: product_id
+            description: "The linked out product ID"
+          - name: retailer_id
+            description: "The linked out retailer ID"
+          - name: price
+            description: "The price of the product"
+              
       - name: tracks_backfill
         description: "Static backfill table for past track corrections"
         columns:
@@ -19,3 +34,13 @@ sources:
             tests:
               - not_null
               - unique
+          - name: insert_timestamp
+            description: "Timestamp of data insertion"
+          - name: track_timestamp
+            description: "Timestamp of the track"
+          - name: product_id
+            description: "The linked out product ID"
+          - name: retailer_id
+            description: "The linked out retailer ID"
+          - name: price
+            description: "The price of the product"
