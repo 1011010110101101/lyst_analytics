@@ -4,7 +4,11 @@
 ) }}
 
 with max_insert_ts as (
+    {% if is_incremental() %}
     select max(insert_timestamp) as max_ts from {{ this }}
+    {% else %}
+    select null as max_ts
+    {% endif %}
 ),
 
 raw_tracks as (
@@ -17,7 +21,6 @@ raw_tracks as (
 
 backfill_tracks as (
     select * from {{ ref('stg_tracks_backfill') }}
-    -- Optional: add filtering here if backfill changes over time
 ),
 
 combined as (
