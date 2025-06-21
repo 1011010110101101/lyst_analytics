@@ -1,3 +1,7 @@
+{{ config(
+    materialized='view'
+) }}
+
 with source as (
     select * from {{ source('data_source', 'tracks_raw') }}
 ),

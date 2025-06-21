@@ -1,3 +1,7 @@
+{{ config(
+    materialized='view'
+) }}
+
 select
     track_id,
     track_timestamp,
