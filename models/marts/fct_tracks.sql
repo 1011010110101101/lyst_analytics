@@ -1,12 +1,17 @@
 {{ config(
-    materialized='table'
+    materialized='incremental',
+    unique_key='track_id'
 ) }}
 
 with raw_tracks as (
     select * from {{ ref('stg_tracks_raw') }}
+    {% if is_incremental() %}
+      where insert_timestamp > (select max(insert_timestamp) from {{ this }})
+    {% endif %}
 ),
 backfill_tracks as (
     select * from {{ ref('stg_tracks_backfill') }}
+    -- If backfill ever changes, then filtering could be added here as well
 ),
 combined as (
     select * from raw_tracks
