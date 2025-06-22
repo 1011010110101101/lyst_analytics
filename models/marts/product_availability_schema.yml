@@ -1,0 +1,22 @@
+version: 2
+
+models:
+  - name: fct_product_countries
+    description: >
+      Fact model showing product availability by country and date.
+      Based on logic from allowed and disallowed country arrays in source data.
+    columns:
+      - name: product_id
+        description: "Unique identifier for the product"
+        tests: [not_null]
+
+      - name: date
+        description: "Date the product rule applies"
+        tests: [not_null]
+
+      - name: country_code
+        description: "Alpha-2 country code representing the country"
+        tests: [not_null]
+
+      - name: is_available
+        description: "Boolean flag indicating if the product is available in the country on that date"
