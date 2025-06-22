@@ -1,8 +1,11 @@
 -- models/marts/product_countries.sql
-{{ config(materialized='table') }}
+{{ config(
+    materialized='table'
+) }}
 
 with country_cte as (
-    select country_code
+    select
+        country_code
     from {{ ref('stg_countries') }}
 ),
 
@@ -17,25 +20,31 @@ product_cte as (
 
 exploded as (
     select
-        product_cte.product_id,
-        product_cte.date,
-        country_cte.country_code,
+        p.product_id,
+        p.date,
+        c.country_code,
         case
-            when array_size(product_cte.allowed_countries) > 0 then
+            -- Explicit allowlist
+            when array_size(p.allowed_countries) > 0 then
                 case
-                    when country_cte.country_code = ANY(product_cte.allowed_countries) then 'allowed'
+                    when c.country_code = ANY(p.allowed_countries) then 'allowed'
                     else 'unavailable'
                 end
-            when array_size(product_cte.disallowed_countries) > 0 then
+
+            -- Only disallow list populated
+            when array_size(p.disallowed_countries) > 0 then
                 case
-                    when country_cte.country_code = ANY(product_cte.disallowed_countries) then 'unavailable'
+                    when c.country_code = ANY(p.disallowed_countries) then 'unavailable'
                     else 'allowed'
                 end
-            when array_size(product_cte.allowed_countries) = 0 and array_size(product_cte.disallowed_countries) = 0 then 'allowed'
+
+            -- Neither list populated
+            when array_size(p.allowed_countries) = 0 and array_size(p.disallowed_countries) = 0 then 'allowed'
+
             else 'unavailable'
         end as availability
-    from product_cte
-    cross join country_cte
+    from product_cte as p
+    cross join country_cte as c
 )
 
 select *
