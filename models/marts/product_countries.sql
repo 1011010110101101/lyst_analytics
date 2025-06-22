@@ -28,8 +28,8 @@ exploded as (
             when array_size(prod.allowed_countries) = 0 and array_size(prod.disallowed_countries) = 0 then 'allowed'
             else 'unavailable'
         end as availability
-    from products as prod
-    cross join countries as ctry
+    from products prod
+    cross join countries ctry
 )
 
 select * from exploded
