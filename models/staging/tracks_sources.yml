@@ -11,9 +11,11 @@ sources:
           - name: track_id
             tests:
               - not_null:
-                severity: warn
+                  config:
+                    severity: warn
               - unique:
-                severity: warn
+                  config:
+                    severity: warn
           - name: insert_timestamp
             description: "Timestamp of data insertion"
           - name: track_timestamp
@@ -30,9 +32,11 @@ sources:
           - name: track_id
             tests:
               - not_null:
-                severity: warn
+                  config:
+                    severity: warn
               - unique:
-                severity: warn
+                  config:
+                    severity: warn
           - name: insert_timestamp
             description: "Timestamp of data insertion"
           - name: track_timestamp
