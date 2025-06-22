@@ -6,7 +6,7 @@ with countries as (
     from {{ ref('stg_countries') }}
 ),
 
-products as (
+product_data as (
     select
         product_id,
         date,
@@ -17,24 +17,24 @@ products as (
 
 exploded as (
     select
-        products.product_id,
-        products.date,
+        product_data.product_id,
+        product_data.date,
         countries.country_code,
         case
-            when array_size(products.allowed_countries) > 0 then
+            when array_size(product_data.allowed_countries) > 0 then
                 case
-                    when countries.country_code = ANY(products.allowed_countries) then 'allowed'
+                    when countries.country_code = ANY(product_data.allowed_countries) then 'allowed'
                     else 'unavailable'
                 end
-            when array_size(products.disallowed_countries) > 0 then
+            when array_size(product_data.disallowed_countries) > 0 then
                 case
-                    when countries.country_code = ANY(products.disallowed_countries) then 'unavailable'
+                    when countries.country_code = ANY(product_data.disallowed_countries) then 'unavailable'
                     else 'allowed'
                 end
-            when array_size(products.allowed_countries) = 0 and array_size(products.disallowed_countries) = 0 then 'allowed'
+            when array_size(product_data.allowed_countries) = 0 and array_size(product_data.disallowed_countries) = 0 then 'allowed'
             else 'unavailable'
         end as availability
-    from products
+    from product_data
     cross join countries
 )
 
