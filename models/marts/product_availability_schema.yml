@@ -5,6 +5,22 @@ models:
     description: >
       Fact model showing product availability by country and date.
       Based on logic from allowed and disallowed country arrays in source data.
+      Includes readable country names for use in BI tools.
+      Potential future enhancement:
+      A regional mapping (e.g., continents or sales regions) could be added by 
+      joining `stg_data_source_countries` to a `country_region_map` table using country_code
+      or ISO-3 as a key.
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - product_id
+            - date
+            - country_code
+    meta:
+      team: analytics_engineering
+      used_in: looker
+      exposed: true
     columns:
       - name: product_id
         description: "Unique identifier for the product"
