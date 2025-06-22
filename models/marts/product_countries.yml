@@ -1,0 +1,20 @@
+version: 2
+
+models:
+  - name: product_countries
+    description: "Exploded product availability by product/date/country."
+    columns:
+      - name: product_id
+        tests:
+          - not_null
+      - name: date
+        tests:
+          - not_null
+      - name: country_code
+        tests:
+          - not_null
+      - name: availability
+        description: "Whether the product is available in that country/date."
+        tests:
+          - accepted_values:
+              values: ['allowed', 'unavailable']
