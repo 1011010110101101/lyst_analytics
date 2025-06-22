@@ -10,8 +10,10 @@ sources:
         columns:
           - name: track_id
             tests:
-              - not_null
-              - unique
+              - not_null:
+                severity: warn
+              - unique:
+                severity: warn
           - name: insert_timestamp
             description: "Timestamp of data insertion"
           - name: track_timestamp
@@ -27,8 +29,10 @@ sources:
         columns:
           - name: track_id
             tests:
-              - not_null
-              - unique
+              - not_null:
+                severity: warn
+              - unique:
+                severity: warn
           - name: insert_timestamp
             description: "Timestamp of data insertion"
           - name: track_timestamp

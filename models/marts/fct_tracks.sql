@@ -1,3 +1,8 @@
+{{ config(
+    materialized='incremental',
+    unique_key='track_id'
+) }}
+
 {% if is_incremental() %}
 -- CTE to get the minimum insert timestamp from the existing table
 with existing_min as (
@@ -46,3 +51,4 @@ select
     price
 from ranked_tracks
 where row_num = 1
+  and track_id is not null
