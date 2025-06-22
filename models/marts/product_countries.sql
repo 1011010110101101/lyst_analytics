@@ -1,7 +1,5 @@
 -- models/marts/product_countries.sql
-{{ config(
-    materialized='table'
-) }}
+{{ config(materialized='table') }}
 
 with countries as (
     select * from {{ ref('stg_countries') }}
@@ -17,8 +15,10 @@ exploded as (
         p.date,
         c.country_code,
         case
-            when array_size(p.allowed_countries) > 0 then 'allowed'
-            when array_size(p.disallowed_countries) > 0 and not array_contains(p.disallowed_countries, c.country_code) then 'allowed'
+            when array_size(p.allowed_countries) > 0 then
+                case when c.country_code = ANY(p.allowed_countries) then 'allowed' else 'unavailable' end
+            when array_size(p.disallowed_countries) > 0 then
+                case when c.country_code = ANY(p.disallowed_countries) then 'unavailable' else 'allowed' end
             when array_size(p.allowed_countries) = 0 and array_size(p.disallowed_countries) = 0 then 'allowed'
             else 'unavailable'
         end as availability
