@@ -7,7 +7,7 @@ with exploded_allowed as (
         product_id,
         date,
         value::string as country_code
-    from {{ ref('stg_data_source_products') }},
+    from {{ ref('stg_products') }},
     lateral flatten(input => allowed_countries)
 ),
 
@@ -16,18 +16,18 @@ exploded_disallowed as (
         product_id,
         date,
         value::string as country_code
-    from {{ ref('stg_data_source_products') }},
+    from {{ ref('stg_products') }},
     lateral flatten(input => disallowed_countries)
 ),
 
 product_dates as (
     select distinct product_id, date
-    from {{ ref('stg_data_source_products') }}
+    from {{ ref('stg_products') }}
 ),
 
 all_countries as (
     select distinct country_code
-    from {{ ref('stg_data_source_countries') }}
+    from {{ ref('stg_countries') }}
 ),
 
 product_country_cross as (
@@ -55,7 +55,7 @@ final as (
         on pcc.product_id = ea.product_id and pcc.date = ea.date and pcc.country_code = ea.country_code
     left join exploded_disallowed ed
         on pcc.product_id = ed.product_id and pcc.date = ed.date and pcc.country_code = ed.country_code
-    left join {{ ref('stg_data_source_products') }} sp
+    left join {{ ref('stg_products') }} sp
         on pcc.product_id = sp.product_id and pcc.date = sp.date
 )
 
