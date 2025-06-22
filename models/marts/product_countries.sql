@@ -11,19 +11,25 @@ products as (
 
 exploded as (
     select
-        p.product_id,
-        p.date,
-        c.country_code,
+        products.product_id,
+        products.date,
+        countries.country_code,
         case
-            when array_size(p.allowed_countries) > 0 then
-                case when c.country_code = ANY(p.allowed_countries) then 'allowed' else 'unavailable' end
-            when array_size(p.disallowed_countries) > 0 then
-                case when c.country_code = ANY(p.disallowed_countries) then 'unavailable' else 'allowed' end
-            when array_size(p.allowed_countries) = 0 and array_size(p.disallowed_countries) = 0 then 'allowed'
+            when array_size(products.allowed_countries) > 0 then
+                case
+                    when countries.country_code = ANY(products.allowed_countries) then 'allowed'
+                    else 'unavailable'
+                end
+            when array_size(products.disallowed_countries) > 0 then
+                case
+                    when countries.country_code = ANY(products.disallowed_countries) then 'unavailable'
+                    else 'allowed'
+                end
+            when array_size(products.allowed_countries) = 0 and array_size(products.disallowed_countries) = 0 then 'allowed'
             else 'unavailable'
         end as availability
-    from products p
-    cross join countries c
+    from products
+    cross join countries
 )
 
 select * from exploded
