@@ -1,12 +1,11 @@
 {{ config(materialized='table') }}
 
-with countries as (
-    select
-        country_code
+with countries_cte as (
+    select country_code
     from {{ ref('stg_countries') }}
 ),
 
-product_data as (
+products_cte as (
     select
         product_id,
         date,
@@ -17,25 +16,25 @@ product_data as (
 
 exploded as (
     select
-        product_data.product_id,
-        product_data.date,
-        countries.country_code,
+        prod.product_id,
+        prod.date,
+        ctry.country_code,
         case
-            when array_size(product_data.allowed_countries) > 0 then
+            when array_size(prod.allowed_countries) > 0 then
                 case
-                    when countries.country_code = ANY(product_data.allowed_countries) then 'allowed'
+                    when ctry.country_code = ANY(prod.allowed_countries) then 'allowed'
                     else 'unavailable'
                 end
-            when array_size(product_data.disallowed_countries) > 0 then
+            when array_size(prod.disallowed_countries) > 0 then
                 case
-                    when countries.country_code = ANY(product_data.disallowed_countries) then 'unavailable'
+                    when ctry.country_code = ANY(prod.disallowed_countries) then 'unavailable'
                     else 'allowed'
                 end
-            when array_size(product_data.allowed_countries) = 0 and array_size(product_data.disallowed_countries) = 0 then 'allowed'
+            when array_size(prod.allowed_countries) = 0 and array_size(prod.disallowed_countries) = 0 then 'allowed'
             else 'unavailable'
         end as availability
-    from product_data
-    cross join countries
+    from products_cte prod
+    cross join countries_cte ctry
 )
 
 select *
