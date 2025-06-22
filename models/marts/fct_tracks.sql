@@ -3,20 +3,27 @@
     unique_key = 'track_id'
 ) }}
 
-with all_tracks as (
-
+{% if is_incremental() %}
+-- CTE to get the minimum insert timestamp from the existing table
+with existing_min as (
+    select min(insert_timestamp) as min_insert_ts
+    from {{ this }}
+),
+all_tracks as (
     select * from {{ ref('stg_tracks_backfill') }}
     union all
     select * from {{ ref('stg_tracks_raw') }}
-
-    {% if is_incremental() %}
-    where insert_timestamp > (select min(insert_timestamp) from {{ this }})
-    {% endif %}
-
-),
+    where insert_timestamp > (select min_insert_ts from existing_min)
+)
+{% else %}
+with all_tracks as (
+    select * from {{ ref('stg_tracks_backfill') }}
+    union all
+    select * from {{ ref('stg_tracks_raw') }}
+)
+{% endif %},
 
 ranked_tracks as (
-
     select
         insert_timestamp,
         track_timestamp,
@@ -28,9 +35,7 @@ ranked_tracks as (
             partition by track_id
             order by insert_timestamp desc
         ) as row_num
-
     from all_tracks
-
 )
 
 select
