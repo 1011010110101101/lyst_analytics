@@ -1,18 +1,17 @@
-{{ config(
-    materialized = 'incremental',
-    unique_key = 'track_id'
-) }}
-
 {% if is_incremental() %}
 -- CTE to get the minimum insert timestamp from the existing table
 with existing_min as (
     select min(insert_timestamp) as min_insert_ts
     from {{ this }}
 ),
-all_tracks as (
+all_staging as (
     select * from {{ ref('stg_tracks_backfill') }}
     union all
     select * from {{ ref('stg_tracks_raw') }}
+),
+all_tracks as (
+    select *
+    from all_staging
     where insert_timestamp > (select min_insert_ts from existing_min)
 )
 {% else %}
