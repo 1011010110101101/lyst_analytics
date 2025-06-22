@@ -1,0 +1,21 @@
+version: 2
+
+models:
+  - name: fct_tracks
+    description: "Deduplicated fact table of user track events sourced from raw and backfill."
+    columns:
+      - name: track_id
+        description: "Unique track identifier"
+        tests:
+          - unique
+          - not_null
+      - name: product_id
+        description: "Linked product"
+      - name: retailer_id
+        description: "Retailer linked to product"
+      - name: price
+        description: "Price of product at time of track"
+      - name: insert_timestamp
+        description: "Time the track was inserted into the system"
+      - name: track_timestamp
+        description: "Time the user tracked the product"
