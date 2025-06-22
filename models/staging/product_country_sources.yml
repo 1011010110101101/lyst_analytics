@@ -1,0 +1,53 @@
+version: 2
+
+sources:
+  - name: data_source
+    database: ANALYTICS_ENGINEER_TEST
+    schema: DATA_SOURCE
+    tables:
+      - name: products
+        description: "Raw product availability rules with allowed/disallowed country arrays"
+        columns:
+          - name: product_id
+            description: "Unique identifier for the product"
+          - name: date
+            description: "Date on which the configuration applies"
+          - name: allowed_countries
+            description: "Array of Alpha-2 country codes where the product is allowed"
+          - name: disallowed_countries
+            description: "Array of Alpha-2 country codes where the product is disallowed"
+      - name: countries
+        description: "Reference table of countries with various code formats"
+        columns:
+          - name: country_code
+            description: "Alpha-2 code"
+            tests: [not_null, unique]
+          - name: country_name
+            description: "Standard country name"
+          - name: country_name_looker
+            description: "Custom label for Looker"
+          - name: country_code_iso3
+            description: "ISO 3166-1 alpha-3 code"
+          - name: country_code_num
+            description: "ISO numeric code"
+
+models:
+  - name: stg_products
+    description: "Staged version of product configuration rules for availability by country"
+    columns:
+      - name: product_id
+        tests: [not_null]
+      - name: date
+        tests: [not_null]
+      - name: allowed_countries
+      - name: disallowed_countries
+
+  - name: stg_countries
+    description: "Staged version of countries reference table"
+    columns:
+      - name: country_code
+        tests: [not_null, unique]
+      - name: country_name
+      - name: country_name_looker
+      - name: country_code_iso3
+      - name: country_code_num
