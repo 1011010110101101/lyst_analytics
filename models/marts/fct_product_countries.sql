@@ -39,7 +39,7 @@ product_country_cross as (
     cross join all_countries c
 ),
 
-final as (
+availability_logic as (
     select
         pcc.product_id,
         pcc.date,
@@ -57,6 +57,19 @@ final as (
         on pcc.product_id = ed.product_id and pcc.date = ed.date and pcc.country_code = ed.country_code
     left join {{ ref('stg_products') }} sp
         on pcc.product_id = sp.product_id and pcc.date = sp.date
+),
+
+final as (
+    select
+        al.product_id,
+        al.date,
+        al.country_code,
+        c.country_name,
+        c.country_name_looker,
+        al.is_available
+    from availability_logic al
+    left join {{ ref('stg_countries') }} c
+        on al.country_code = c.country_code
 )
 
 select * from final

@@ -18,5 +18,11 @@ models:
         description: "Alpha-2 country code representing the country"
         tests: [not_null]
 
+      - name: country_name
+        description: "Standard full name of the country (e.g., 'France')"
+
+      - name: country_name_looker
+        description: "Formatted country name used for display in Looker"
+
       - name: is_available
         description: "Boolean flag indicating if the product is available in the country on that date"
